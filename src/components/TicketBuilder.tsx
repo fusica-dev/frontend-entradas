@@ -22,7 +22,7 @@ interface TicketCardProps {
   onUpdate: (
     type: TicketType,
     id: string,
-    field: "name" | "documentType" | "documentNumber",
+    field: "name" | "documentType" | "documentNumber" | "licensePlate",
     value: string,
   ) => void;
   onRemove: (type: TicketType, id: string) => void;
@@ -38,7 +38,7 @@ function TicketCard({ ticket, index, type, onUpdate, onRemove }: Readonly<Ticket
           <Trash2 size={16} />
         </button>
       </div>
-      <div className="grid gap-3 sm:grid-cols-[1.3fr_1fr_1fr]">
+      <div className="grid gap-3 sm:grid-cols-[1.3fr_1fr_1fr_1fr]">
         <Field
           label="Nombre completo"
           value={ticket.name}
@@ -67,6 +67,12 @@ function TicketCard({ ticket, index, type, onUpdate, onRemove }: Readonly<Ticket
               onChange={(event) => onUpdate(type, ticket.id, "documentNumber", event.target.value)}
               placeholder="Número"
               required
+            />
+            <Field
+              label="Placa de vehículo"
+              value={guestTicket?.licensePlate ?? ""}
+              onChange={(event) => onUpdate(type, ticket.id, "licensePlate", event.target.value)}
+              placeholder="Opcional, ej. ABC-123"
             />
           </>
         )}

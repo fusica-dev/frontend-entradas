@@ -36,7 +36,13 @@ export default function App() {
     } else {
       setGuestTickets((items) => [
         ...items,
-        { id: crypto.randomUUID(), name: "", documentType: "DNI", documentNumber: "" },
+        {
+          id: crypto.randomUUID(),
+          name: "",
+          documentType: "DNI",
+          documentNumber: "",
+          licensePlate: "",
+        },
       ]);
     }
   };
@@ -49,7 +55,7 @@ export default function App() {
   const updateTicket = (
     type: TicketType,
     id: string,
-    field: "name" | "documentType" | "documentNumber",
+    field: "name" | "documentType" | "documentNumber" | "licensePlate",
     value: string,
   ) => {
     if (type === "utec") {
@@ -65,6 +71,7 @@ export default function App() {
         if (item.id !== id) return item;
         if (field === "name") return { ...item, name: value };
         if (field === "documentNumber") return { ...item, documentNumber: value };
+        if (field === "licensePlate") return { ...item, licensePlate: value };
         return { ...item, documentType: value as DocumentType };
       }),
     );

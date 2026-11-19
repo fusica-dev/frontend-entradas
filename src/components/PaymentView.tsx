@@ -92,6 +92,7 @@ export default function PaymentView({
           fullName: ticket.name,
           docType: ticket.documentType,
           docNumber: ticket.documentNumber,
+          licensePlate: ticket.licensePlate.trim() || "",
           unitPrice: 5,
         })),
         ...Array.from({ length: bingoQty }, (_, index) => ({

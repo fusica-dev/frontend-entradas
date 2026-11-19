@@ -12,6 +12,7 @@ export interface GuestTicket {
   name: string;
   documentType: DocumentType;
   documentNumber: string;
+  licensePlate: string;
 }
 
 export type BingoNameUpdater = (previous: string[]) => string[];
