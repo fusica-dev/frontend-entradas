@@ -70,7 +70,7 @@ export default function PaymentView({
       setError("Ingresa tu correo electrónico para recibir los detalles de la compra.");
       return;
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+    if (!/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(normalizedEmail)) {
       setError("Ingresa un correo electrónico válido.");
       return;
     }
@@ -135,6 +135,12 @@ export default function PaymentView({
       });
 
       if (!response.ok) throw new Error("No se pudo registrar el pedido.");
+
+      const result = await response.json();
+      if (result.status !== "success") {
+        throw new Error(result.message || "Error al procesar el pedido en el servidor.");
+      }
+
       onSuccess(orderId);
     } catch (submitError) {
       setError(submitError instanceof Error
@@ -169,7 +175,16 @@ export default function PaymentView({
                     <OrderRow key={ticket.id} name={`Entrada UTEC ${index + 1}`} detail={ticket.name} price="S/ 3.00" />
                   ))}
                   {guestTickets.map((ticket, index) => (
-                    <OrderRow key={ticket.id} name={`Entrada externa ${index + 1}`} detail={`${ticket.name} · ${ticket.documentType} ${ticket.documentNumber}`} price="S/ 5.00" />
+                    <OrderRow
+                      key={ticket.id}
+                      name={`Entrada externa ${index + 1}`}
+                      detail={[
+                        ticket.name,
+                        `${ticket.documentType} ${ticket.documentNumber}`,
+                        ticket.licensePlate?.trim() ? `Placa ${ticket.licensePlate.trim()}` : "",
+                      ].filter(Boolean).join(" · ")}
+                      price="S/ 5.00"
+                    />
                   ))}
                   {bingoQty > 0 && (
                     <OrderRow
