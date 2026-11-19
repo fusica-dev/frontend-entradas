@@ -16,3 +16,9 @@ export interface GuestTicket {
 }
 
 export type BingoNameUpdater = (previous: string[]) => string[];
+
+export interface BingoAssignment {
+  id: string;
+  name: string;
+  quantity: number;
+}

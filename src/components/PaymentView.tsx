@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Check, ImagePlus, LoaderCircle, ShieldCheck } from "lucide-react";
 import type { ChangeEvent } from "react";
-import type { GuestTicket, UtecTicket } from "../types";
+import type { BingoAssignment, GuestTicket, UtecTicket } from "../types";
 
 const fileToBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -22,8 +22,7 @@ interface PaymentViewProps {
   utecTickets: UtecTicket[];
   guestTickets: GuestTicket[];
   bingoQty: number;
-  bingoShared: boolean;
-  bingoNames: string[];
+  bingoAssignments: BingoAssignment[];
   total: number;
   onBack: () => void;
   onSuccess: (orderId: string) => void;
@@ -39,8 +38,7 @@ export default function PaymentView({
   utecTickets,
   guestTickets,
   bingoQty,
-  bingoShared,
-  bingoNames,
+  bingoAssignments,
   total,
   onBack,
   onSuccess,
@@ -104,15 +102,15 @@ export default function PaymentView({
           licensePlate: ticket.licensePlate.trim() || "",
           unitPrice: 5,
         })),
-        ...Array.from({ length: bingoQty }, (_, index) => ({
-          type: "Bingo",
-          fullName: bingoShared
-            ? (bingoNames[0] ?? "")
-            : (bingoNames[index] ?? ""),
-          docType: "N/A",
-          docNumber: "N/A",
-          unitPrice: 2,
-        })),
+        ...bingoAssignments.flatMap((assignment) =>
+          Array.from({ length: assignment.quantity }, () => ({
+            type: "Bingo",
+            fullName: assignment.name.trim(),
+            docType: "N/A",
+            docNumber: "N/A",
+            unitPrice: 2,
+          })),
+        ),
       ];
       const payload = {
         orderId,
@@ -189,9 +187,12 @@ export default function PaymentView({
                   {bingoQty > 0 && (
                     <OrderRow
                       name={`Cartillas de bingo × ${bingoQty}`}
-                      detail={bingoShared
-                        ? `Responsable: ${bingoNames[0]}`
-                        : bingoNames.slice(0, bingoQty).map((name, index) => `${index + 1}. ${name}`).join(" · ")}
+                      detail={bingoAssignments
+                        .filter((assignment) => assignment.quantity > 0)
+                        .map((assignment) =>
+                          `${assignment.name.trim()} × ${assignment.quantity}`,
+                        )
+                        .join(" · ")}
                       price={`S/ ${(bingoQty * 2).toFixed(2)}`}
                     />
                   )}

@@ -1,29 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import EventDetails from "./components/EventDetails";
 import TicketBuilder from "./components/TicketBuilder";
 import PaymentView from "./components/PaymentView";
 import SuccessView from "./components/SuccessView";
-import type { DocumentType, GuestTicket, TicketType, UtecTicket } from "./types";
+import type { BingoAssignment, DocumentType, GuestTicket, TicketType, UtecTicket } from "./types";
 
 const makeId = () => `UTEC-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
 export default function App() {
   const [utecTickets, setUtecTickets] = useState<UtecTicket[]>([]);
   const [guestTickets, setGuestTickets] = useState<GuestTicket[]>([]);
-  const [bingoQty, setBingoQty] = useState(0);
-  const [bingoShared, setBingoShared] = useState(true);
-  const [bingoNames, setBingoNames] = useState<string[]>([]);
+  const [bingoAssignments, setBingoAssignments] = useState<BingoAssignment[]>([]);
   const [view, setView] = useState<"builder" | "payment" | "success">("builder");
   const [orderId, setOrderId] = useState("");
 
-  useEffect(() => {
-    setBingoNames((previous) => {
-      const next = Array.from({ length: bingoQty }, (_, index) => previous[index] ?? "");
-      return next;
-    });
-  }, [bingoQty]);
+  const bingoQty = bingoAssignments.reduce((sum, assignment) => sum + assignment.quantity, 0);
 
   const total =
     utecTickets.length * 3 +
@@ -87,11 +80,9 @@ export default function App() {
       return "Completa nombre y documento de todas las entradas externas.";
     }
     if (bingoQty > 0) {
-      const requiredNames = bingoShared
-        ? bingoNames.slice(0, 1)
-        : bingoNames.slice(0, bingoQty);
-      if (requiredNames.some((name) => !name.trim())) {
-        return "Completa el nombre del responsable asignado a cada cartilla.";
+      if (bingoAssignments.some((assignment) =>
+        !assignment.name.trim() || assignment.quantity < 1)) {
+        return "Completa el nombre y la cantidad de cartillas para cada responsable.";
       }
     }
     return "";
@@ -133,15 +124,12 @@ export default function App() {
             utecTickets={utecTickets}
             guestTickets={guestTickets}
             bingoQty={bingoQty}
-            bingoShared={bingoShared}
-            bingoNames={bingoNames}
+            bingoAssignments={bingoAssignments}
             total={total}
             onAddTicket={addTicket}
             onRemoveTicket={removeTicket}
             onUpdateTicket={updateTicket}
-            onSetBingoQty={setBingoQty}
-            onSetBingoShared={setBingoShared}
-            onSetBingoNames={setBingoNames}
+            onSetBingoAssignments={setBingoAssignments}
             onContinue={handleContinue}
           />
         </main>
@@ -151,8 +139,7 @@ export default function App() {
           utecTickets={utecTickets}
           guestTickets={guestTickets}
           bingoQty={bingoQty}
-          bingoShared={bingoShared}
-          bingoNames={bingoNames}
+          bingoAssignments={bingoAssignments}
           total={total}
           onBack={handleBackToBuilder}
           onSuccess={handleSuccess}

@@ -1,6 +1,6 @@
 import { Minus, Plus, Trash2, Ticket, Users, Grid3X3, ShoppingBag } from "lucide-react";
 import type { ChangeEvent, Dispatch, SetStateAction, InputHTMLAttributes } from "react";
-import type { GuestTicket, TicketType, UtecTicket } from "../types";
+import type { BingoAssignment, GuestTicket, TicketType, UtecTicket } from "../types";
 
 interface FieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -85,15 +85,12 @@ interface TicketBuilderProps {
   utecTickets: UtecTicket[];
   guestTickets: GuestTicket[];
   bingoQty: number;
-  bingoShared: boolean;
-  bingoNames: string[];
+  bingoAssignments: BingoAssignment[];
   total: number;
   onAddTicket: (type: TicketType) => void;
   onRemoveTicket: (type: TicketType, id: string) => void;
   onUpdateTicket: TicketCardProps["onUpdate"];
-  onSetBingoQty: Dispatch<SetStateAction<number>>;
-  onSetBingoShared: Dispatch<SetStateAction<boolean>>;
-  onSetBingoNames: Dispatch<SetStateAction<string[]>>;
+  onSetBingoAssignments: Dispatch<SetStateAction<BingoAssignment[]>>;
   onContinue: () => void;
 }
 
@@ -101,23 +98,37 @@ export default function TicketBuilder({
   utecTickets,
   guestTickets,
   bingoQty,
-  bingoShared,
-  bingoNames,
+  bingoAssignments,
   total,
   onAddTicket,
   onRemoveTicket,
   onUpdateTicket,
-  onSetBingoQty,
-  onSetBingoShared,
-  onSetBingoNames,
+  onSetBingoAssignments,
   onContinue,
 }: Readonly<TicketBuilderProps>) {
-  const setBingoName = (index: number, value: string) => {
-    onSetBingoNames((previous) => {
-      const next = [...previous];
-      next[index] = value;
-      return next;
-    });
+  const addBingoAssignment = () => {
+    onSetBingoAssignments((previous) => [
+      ...previous,
+      { id: crypto.randomUUID(), name: "", quantity: 1 },
+    ]);
+  };
+
+  const updateBingoAssignment = (
+    id: string,
+    field: "name" | "quantity",
+    value: string | number,
+  ) => {
+    onSetBingoAssignments((previous) =>
+      previous.map((assignment) =>
+        assignment.id === id ? { ...assignment, [field]: value } : assignment,
+      ),
+    );
+  };
+
+  const removeBingoAssignment = (id: string) => {
+    onSetBingoAssignments((previous) =>
+      previous.filter((assignment) => assignment.id !== id),
+    );
   };
 
   return (
@@ -183,54 +194,65 @@ export default function TicketBuilder({
               </div>
               <strong className="price">S/ 2.00</strong>
             </div>
-            <div className="mt-5 flex items-center justify-between rounded-2xl bg-sky-950 px-4 py-3">
-              <p className="font-bold text-white">Cantidad</p>
-              <div className="flex items-center gap-4">
-                <button type="button" className="qty-button" onClick={() => onSetBingoQty(Math.max(0, bingoQty - 1))} aria-label="Quitar cartilla">
-                  <Minus size={17} />
-                </button>
-                <strong className="min-w-6 text-center text-xl text-white">{bingoQty}</strong>
-                <button type="button" className="qty-button" onClick={() => onSetBingoQty(bingoQty + 1)} aria-label="Agregar cartilla">
-                  <Plus size={17} />
-                </button>
-              </div>
-            </div>
+            <button type="button" className="add-button" onClick={addBingoAssignment}>
+              <Plus size={18} /> Agregar responsable
+            </button>
 
-            {bingoQty > 0 && (
-              <div className="mt-5 space-y-4">
-                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-sky-100 p-4">
-                  <input
-                    type="checkbox"
-                    checked={bingoShared}
-                    onChange={(event) => onSetBingoShared(event.target.checked)}
-                    className="mt-0.5 h-4 w-4 accent-sky-700"
-                  />
-                  <span className="text-sm font-bold leading-relaxed text-sky-900">
-                    Asignar todas las cartillas a un mismo responsable para recojo el día del evento
-                  </span>
-                </label>
-                {bingoShared ? (
-                  <Field
-                    label="Nombre completo del responsable"
-                    value={bingoNames[0] ?? ""}
-                    onChange={(event) => setBingoName(0, event.target.value)}
-                    placeholder="Nombre del responsable"
-                    required
-                  />
-                ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {Array.from({ length: bingoQty }, (_, index) => (
-                      <Field
-                        key={index}
-                        label={`Responsable cartilla ${index + 1}`}
-                        value={bingoNames[index] ?? ""}
-                        onChange={(event) => setBingoName(index, event.target.value)}
-                        placeholder="Nombre completo"
-                        required
-                      />
-                    ))}
+            {bingoAssignments.length > 0 && (
+              <div className="mt-5 space-y-3">
+                {bingoAssignments.map((assignment, index) => (
+                  <div key={assignment.id} className="grid items-end gap-3 rounded-2xl border border-sky-100 bg-sky-50/40 p-4 sm:grid-cols-[1fr_150px_auto]">
+                    <Field
+                      label={`Responsable ${index + 1}`}
+                      value={assignment.name}
+                      onChange={(event) => updateBingoAssignment(assignment.id, "name", event.target.value)}
+                      placeholder="Nombre completo"
+                      required
+                    />
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-sky-700">Cartillas</span>
+                      <div className="flex h-[46px] items-center justify-between rounded-xl border border-sky-200 bg-white px-2">
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() => updateBingoAssignment(
+                            assignment.id,
+                            "quantity",
+                            Math.max(1, assignment.quantity - 1),
+                          )}
+                          aria-label={`Quitar cartilla a ${assignment.name || `responsable ${index + 1}`}`}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <strong className="text-lg text-sky-950">{assignment.quantity}</strong>
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() => updateBingoAssignment(
+                            assignment.id,
+                            "quantity",
+                            assignment.quantity + 1,
+                          )}
+                          aria-label={`Agregar cartilla a ${assignment.name || `responsable ${index + 1}`}`}
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => removeBingoAssignment(assignment.id)}
+                      className="icon-button mb-[6px]"
+                      aria-label={`Eliminar responsable ${assignment.name || index + 1}`}
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
-                )}
+                ))}
+                <div className="flex items-center justify-between rounded-xl bg-sky-950 px-4 py-3 text-white">
+                  <span className="font-bold">Total de cartillas</span>
+                  <strong className="text-lg">{bingoQty}</strong>
+                </div>
               </div>
             )}
           </article>
