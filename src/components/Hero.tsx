@@ -67,7 +67,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-8 right-5 z-20 flex items-center gap-2 lg:right-8">
+      <div className="absolute bottom-24 right-5 z-20 flex items-center gap-2 sm:bottom-28 lg:right-8">
         <button type="button" onClick={() => changeSlide(-1)} className="hero-control" aria-label="Anterior">
           <ChevronLeft size={20} />
         </button>

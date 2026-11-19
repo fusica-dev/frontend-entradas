@@ -3,7 +3,7 @@ import { CalendarDays, Clock3, MapPin } from "lucide-react";
 const details = [
   { icon: CalendarDays, label: "Fecha", value: "Viernes 4 de diciembre de 2026" },
   { icon: Clock3, label: "Horario", value: "2:00 PM – 8:30 PM" },
-  { icon: MapPin, label: "Lugar", value: "Campus UTEC" },
+  { icon: MapPin, label: "Lugar", value: "Auditorio UTEC" },
 ];
 
 export default function EventDetails() {
@@ -13,9 +13,8 @@ export default function EventDetails() {
         {details.map(({ icon: Icon, label, value }, index) => (
           <div
             key={label}
-            className={`flex items-center gap-4 px-6 py-7 ${
-              index > 0 ? "border-t border-sky-100 md:border-l md:border-t-0" : ""
-            }`}
+            className={`flex items-center gap-4 px-6 py-7 ${index > 0 ? "border-t border-sky-100 md:border-l md:border-t-0" : ""
+              }`}
           >
             <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-100 text-sky-700">
               <Icon size={22} />

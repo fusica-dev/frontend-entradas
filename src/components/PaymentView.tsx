@@ -183,14 +183,19 @@ export default function PaymentView({
             <h2 className="text-xl font-black text-sky-950">Pago con Yape</h2>
             <div className="mt-5 grid grid-cols-[145px_1fr] items-center gap-4 rounded-2xl bg-sky-50 p-4">
               <img
-                src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=Yape-UTEC-Festival-Cultural-2026"
+                src="/images/yape/yape_tamy.webp"
                 alt="Código QR de Yape"
                 className="aspect-square w-full rounded-xl bg-white p-2"
               />
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider text-sky-500">Paga al número</p>
-                <p className="mt-1 text-xl font-black text-sky-950">999 888 777</p>
-                <p className="mt-2 text-sm text-sky-700">Titular: <b>Festival UTEC</b></p>
+                <p className="text-xs font-bold uppercase tracking-wider text-sky-500">Titular</p>
+                <p className="mt-1 font-black text-sky-950">Tamy Kristel Flores Guevara</p>
+                <p className="mt-3 text-xs font-bold uppercase tracking-wider text-sky-500">Yape</p>
+                <p className="mt-1 text-lg font-black text-sky-950">948981074</p>
+                <p className="mt-3 text-xs font-bold uppercase tracking-wider text-sky-500">CCI</p>
+                <p className="mt-1 break-all text-xs font-bold text-sky-950">00219111534103008957</p>
+                <p className="mt-3 text-xs font-bold uppercase tracking-wider text-sky-500">BCP</p>
+                <p className="mt-1 text-sm font-black text-sky-950">19115341030089</p>
               </div>
             </div>
 

@@ -112,9 +112,19 @@ export default function App() {
     setView("success");
   };
 
+  const handleBackToBuilder = () => {
+    setView("builder");
+    window.requestAnimationFrame(() => {
+      document.querySelector("#comprar")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  };
+
   return (
     <div className="min-h-screen">
-      <Header />
+      {view === "builder" && <Header />}
       {view === "builder" && (
         <main>
           <Hero />
@@ -144,7 +154,7 @@ export default function App() {
           bingoShared={bingoShared}
           bingoNames={bingoNames}
           total={total}
-          onBack={() => setView("builder")}
+          onBack={handleBackToBuilder}
           onSuccess={handleSuccess}
         />
       )}
