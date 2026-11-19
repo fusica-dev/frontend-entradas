@@ -47,7 +47,7 @@ export default function PaymentView({
 }: Readonly<PaymentViewProps>) {
   const [proof, setProof] = useState<File | null>(null);
   const [preview, setPreview] = useState("");
-  const [contact, setContact] = useState("");
+  const [email, setEmail] = useState("");
   const [yapeSender, setYapeSender] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -65,6 +65,15 @@ export default function PaymentView({
   };
 
   const submitOrder = async () => {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      setError("Ingresa tu correo electrónico para recibir los detalles de la compra.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError("Ingresa un correo electrónico válido.");
+      return;
+    }
     if (!yapeSender.trim()) {
       setError("Ingresa el remitente o titular de la cuenta que realizó el Yape.");
       return;
@@ -108,7 +117,8 @@ export default function PaymentView({
       const payload = {
         orderId,
         totalAmount: total,
-        contact,
+        email: normalizedEmail,
+        contact: normalizedEmail,
         yapeSender: yapeSender.trim(),
         imageB64: base64,
         mimeType: proof.type,
@@ -237,14 +247,16 @@ export default function PaymentView({
 
             <label className="mt-5 block">
               <span className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-sky-700">
-                Teléfono o correo (opcional)
+                Correo electrónico *
               </span>
               <input
-                type="text"
+                type="email"
                 className="form-input"
-                value={contact}
-                onChange={(event) => setContact(event.target.value)}
-                placeholder="Para comunicarnos contigo"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="ejemplo@correo.com"
+                autoComplete="email"
+                required
               />
             </label>
 

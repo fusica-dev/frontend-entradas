@@ -38,7 +38,7 @@ function TicketCard({ ticket, index, type, onUpdate, onRemove }: Readonly<Ticket
           <Trash2 size={16} />
         </button>
       </div>
-      <div className="grid gap-3 sm:grid-cols-[1.3fr_1fr_1fr_1fr]">
+      <div className="grid items-end gap-3 sm:grid-cols-2 xl:grid-cols-[1.3fr_1fr_1fr_1fr]">
         <Field
           label="Nombre completo"
           value={ticket.name}
